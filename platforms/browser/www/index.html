@@ -1,0 +1,248 @@
+<!DOCTYPE html><html><head>
+    <meta charset="utf-8">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="viewport" content="initial-scale=1, width=device-width, viewport-fit=cover">
+    <meta name="color-scheme" content="light dark">
+
+
+    <!--UIkit-->
+    <link rel="stylesheet" href="uikit/css/uikit.min.css">
+    <script src="uikit/js/uikit.min.js"></script>
+    <script src="uikit/js/uikit-icons.min.js"></script>
+
+    <!--main CSS -->
+    <link rel="stylesheet" href="css/index.css">
+
+    <!--Title-->
+    <title>Time travel</title>
+</head>
+
+<body>
+    <div class="app">
+        <!--CONTENT-->
+
+        <!--NAVBAR-->
+        <ul uk-tab="" class="uk-light">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Time travel</a></li>
+            <li><a href="#">Settings</a></li>
+        </ul>
+
+        <!--TABS CONTENTS-->
+        <ul class="uk-switcher uk-margin">
+            <!--TAB 1-->
+            <li>
+                <div class="uk-height-1-1">
+                    <div class="uk-container">
+
+
+                        <div class="uk-grid-match uk-child-width-1-2@s" uk-grid="">
+                            <div>
+                                <div class="uk-card uk-card-default uk-card-body">
+                                    <h3 class="uk-margin-remove">User status</h3>
+                                    <ul class="uk-list uk-list-divider">
+                                        <li><b>Year: </b><span id="year"></span></li>
+                                        <li><b>Date: </b><span id="date"></span></li>
+                                        <li><b>Region: </b><span id="region"></span></li>
+                                        <li><b>Coordinates: </b><span id="coordinates"></span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="uk-card uk-card-default uk-card-body uk-light" id="device-status-box">
+                                    <h3 class="uk-margin-remove">Device status</h3>
+                                    <p><b>Ready:</b> <span id="ready"></span></p>
+                                    <p><b>Fuel level:</b> <span id="fuel"></span> %</p>
+                                    <progress id="fuel-level-indicator" class="uk-progress" value="1" max="100"></progress>
+                                    <button class="uk-button uk-button-default" id="fuel-check" uk-toggle="target: #modal-close-fuel" type="button">Check fuel level</button>
+
+                                </div>
+
+                                <div id="modal-close-fuel" uk-modal="">
+                                    <div class="uk-modal-dialog uk-modal-body uk-light">
+                                        <h2 class="uk-modal-title">Checking fuel level ...</h2>
+                                        <progress id="js-progressbar" class="uk-progress" value="10" max="100"></progress>
+                                        <script>
+
+                                            UIkit.util.ready(function () {
+
+                                                var bar = document.getElementById('js-progressbar');
+
+                                                document.getElementById('fuel-check').onclick = function () {
+                                                    var fuel_check = new Audio('audio/fuel_check.mp3');
+                                                    fuel_check.play();
+                                                    var animate = setInterval(function () {
+
+                                                        bar.value += 10;
+
+                                                        if (bar.value >= bar.max) {
+                                                            clearInterval(animate);
+                                                            document.getElementById('fuel').innerHTML = 100;
+                                                            var device = JSON.parse(window.localStorage.getItem("device"));
+                                                            device.ready = true;
+                                                            device.status.deviceStatus.fuelLevel = 100;
+                                                            window.localStorage.setItem("device", JSON.stringify(device));
+                                                            var full_fuel = new Audio('audio/full-fuel.mp3');
+                                                            full_fuel.play();
+                                                            setTimeout(function () { //wait for audio
+                                                                window.location.href = "index.html";
+                                                            }, 6000);
+                                                        }
+
+                                                    }, 1000);
+
+                                                };
+
+                                            });
+
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!--TAB 2-->
+            <li>
+                <div class="">
+                    <div class="uk-container">
+
+
+                        <div class="uk-alert-danger" uk-alert="" id="low-fuel-alert">
+                            <p><b>DANGER !!!</b> Insufficient fuel level for time travel. Please, refuel time travel
+                                device before time traveling.</p>
+                        </div>
+
+                        <div clas="uk-width-1-1">
+                            <h3>Step 1 - Select year</h3>
+                            <div class="uk-margin">
+                                <input class="uk-input uk-width-1-2" type="number" id="year-slider" onchange="changeValueOfYearSliderInput()">
+                            </div>
+
+                            <div class="uk-margin">
+                                <input name="range" id="settings-year" class="uk-range" type="range" value="" min="-10000" max="2021" step="1" oninput="changeValueOfYearSlider()">
+                                <output for="settings-year" onforminput="value = range.valueAsNumber;"></output>
+                            </div>
+                        </div>
+                        <div uk-grid="">
+                            
+                            <div class="uk-width-1-2@s">
+                                <div uk-grid="" class="uk-margin-remove">
+                                    <input class="uk-input uk-width-1-2" type="number" id="month-input" placeholder="Month">
+                                    <input class="uk-input uk-width-1-2" type="number" id="day-input" placeholder="Day">
+                                </div>
+                                <script>
+                                    //document.getElementById('year-slider').value = document.getElementById('settings-year').value;
+                                    function changeValueOfYearSlider() {
+                                        document.getElementById('year-slider').value = document.getElementById('settings-year').value;
+                                    }
+                                    function changeValueOfYearSliderInput() {
+                                        document.getElementById('settings-year').value = document.getElementById('year-slider').value;
+                                    }
+                                </script>
+                            </div>
+
+                            <div class="uk-width-1-2@s">
+                                <h3>Step 2 - Select location</h3>
+                                <input class="uk-input uk-width-1-2" type="text" id="location-input" placeholder="Location name">
+                                <div class="uk-margin">
+                                    <div uk-grid="" class="uk-margin-remove">
+                                        <input class="uk-input uk-width-1-2" type="text" id="location-input-n" placeholder="N">
+                                        <input class="uk-input uk-width-1-2" id="location-input-e" type="text" placeholder="E">
+                                    </div>
+                                </div>
+                                <div class="uk-margin">
+                                    <button id="initiate" class="uk-button uk-button-primary" type="button" uk-toggle="target: #modal-close-default">Initiate time travel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+
+                        
+
+                        <!-- This is the modal with the default close button -->
+                        <div id="modal-close-default" uk-modal="">
+                            <div class="uk-modal-dialog uk-modal-body uk-light">
+                                <h2 class="uk-modal-title">Initiating time travel</h2>
+                                Fuel:
+                                <progress id="travel-fuel-level" class="uk-progress" value="100" max="100"></progress>
+                                Progress:
+                                <progress id="travel-progress" class="uk-progress" value="0" max="100"></progress>
+                                <script>
+
+                                    UIkit.util.ready(function () {
+
+                                        var bar = document.getElementById('travel-progress');
+
+                                        document.getElementById('initiate').onclick = function () {
+
+                                            //No fuel
+                                            if (device.ready == false || device.ready == "false") {
+                                                window.location.href = "index.html";
+                                            }
+
+                                            var time_travel_initiated = new Audio('audio/time-travel-initiated.mp3');
+                                            time_travel_initiated.play();
+                                            var level = 100;
+
+                                            var animate = setInterval(function () {
+
+                                                bar.value += 10;
+                                                level -= 10;
+                                                document.getElementById('travel-fuel-level').value = level.toString();
+
+                                                if (bar.value >= bar.max) {
+                                                    clearInterval(animate);
+
+
+                                                    travel();
+
+                                                    var time_travel_completed = new Audio('audio/time-travel-completed.mp3');
+                                                    time_travel_completed.play();
+                                                    setTimeout(function () { //wait for audio
+                                                        window.location.href = "index.html";
+                                                    }, 2000);
+                                                }
+
+                                            }, 1000);
+
+                                        };
+
+                                    });
+
+                                </script>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </li>
+
+            <!--TAB 3-->
+            <li>
+                <div class="">
+                    <div class="uk-container">
+
+                        <h1>Settings</h1>
+
+
+                    </div>
+                </div>
+            </li>
+        </ul>
+
+
+        <!--END OF CONTENT-->
+
+        <script src="cordova.js"></script>
+        <script src="js/index.js"></script>
+    </div>
+
+
+</body></html>
